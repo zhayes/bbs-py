@@ -1,0 +1,22 @@
+<div class="side-left">
+        <div class="article-hot">
+            <div class="list-group">
+                <h6>热门推荐</h6>
+                {% for article in article_list %}
+                <a href="/article/{{article.id}}" class="list-group-item list-group-item-action">
+                    <div style="word-break: break-all;">
+                        <h7 class="mb-1">{{article.title}}</h7>
+                        <div class='d-flex justify-content-between'>
+                            <small>{{article.create_time|date:'Y-m-d H:i:s'}}</small>
+                            <small>10 <i class="fa fa-heart-o"></i></small>
+                        </div>
+                    </div>
+                    <p class="mb-1" style="font-size: 12px">
+                        {{article.content|striptags|slice:'100'}}...
+                    </p>
+                    <small>via: {{article.author_name}}</small>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,20 @@
+
+{%extends "base.html"%}
+
+{% block main-content %}
+<div style="padding: 1.2em; background-color:#fff">
+    <h4 style="text-align:center">{{article.title}}</h4>
+    <p class='d-flex justify-content-between'>
+        <small>{{article.create_time|date:'Y-m-d H:i:s'}}</small>
+        <small>作者：{{article.author_name}}</small>
+    </p>
+    <section>
+        {{article.content|safe}}
+    </section>
+</div>
+{%endblock%}
+
+{%block left-content %}
+    {%include "left-side.html"%}
+{%endblock%}
+

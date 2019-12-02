@@ -1,0 +1,58 @@
+
+{%extends "base.html"%}
+
+{% block main-content %}
+<div style="height:100%; position: relative; z-index: 1; padding: 10px; ">
+    <div class="input-group input-group-lg">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-lg">标题</span>
+        </div>
+        <input type="text" class="form-control" name="title" placeholder="请输入文章标题"  aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg">
+        <div class="input-group-append">
+            <button class="btn btn-danger" type="button" id="publishBtn">发布</button>
+        </div>
+    </div>
+
+    <div style="height: 100%; margin-bottom: -100px; overflow: hidden; margin-top: 10px">
+        <div id="toolbar" style="background-color:#fff">
+        </div>
+
+        <div id="editor" style="background-color: #fff; margin-top: 10px; height: 80%; max-height: 600px">
+        </div>
+    </div>
+</div>
+{%endblock%}
+
+{%block right-content %}
+    {%include "right-side.html"%}
+{%endblock%}
+
+{%block js %}
+<script src="//unpkg.com/wangeditor/release/wangEditor.min.js"></script>
+<script>
+    ;(function(){
+        var E = window.wangEditor
+        var editor = new E('#toolbar', '#editor');
+        editor.create()
+
+        var publishBtn = document.getElementById('publishBtn')
+
+        publishBtn.addEventListener('click', function(){
+            $.ajax({
+                method: 'POST',
+                url: '/write',
+                data: JSON.stringify({
+                    title: $('input[name=title]').val().trim(),
+                    content: editor.txt.text() ? editor.txt.html() : '',
+                    author_id: '{{user_id}}',
+                    author_name: '{{user_name}}'
+                }),
+                success: function(){
+                    location.href="/"
+                }
+            })
+        })
+    })()
+</script>
+{%endblock%}
+

@@ -1,0 +1,64 @@
+<header class="bg-dark fixed-top ">
+    <div class="container">
+        <nav class=" navbar navbar-dark  navbar-expand-lg">
+            <a class="navbar-brand" href="/">安心无忧论坛</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            {% load static %}
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <!-- <li class="nav-item active">
+                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                    </li> -->
+                </ul>
+                {% if user_name and user_id %}
+                    <a href="/write" class="fa fa-edit" style="color:#fff; font-size: 28px; margin: 0 10px"></a>
+                {%endif%}
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="search" placeholder="全站搜索" aria-label="Search">
+                    <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">搜索</button>
+                </form>
+                {% if user_name and user_id %}
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" 
+                            href="#" 
+                            role="button" 
+                            data-toggle="dropdown"
+                            aria-haspopup="true" 
+                            aria-expanded="false"
+                            {% if user_avatar %}
+                            style="padding-top: 0; padding-bottom:0; padding-right:0"
+                            {% endif %}
+                            
+                        >
+                           
+                            {% if user_avatar %}
+                                <img src="{{ MEDIA_URL }}avatar/{{user_avatar}}" width="38px" height="38px" style="object-fit: cover; border-radius: 50%"/>
+                            {% else %}
+                                {{ user_name }}
+                            {% endif %}
+                            
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="javascript:;"><i class="fa fa-user-secret" aria-hidden="true"></i> 个人中心</a>
+                            <a class="dropdown-item" href="javascript:;"><i class="fa fa-cogs" aria-hidden="true"></i> 个人设置</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/logout?name={{user_name}}&id={{user_id}}"><i class="fa fa-sign-out" aria-hidden="true"></i> 退出</a>
+                        </div>
+                    </div>
+                {%else%}
+                    <a class="my-2 my-sm-0 ml-sm-2" href="/login"><button class="btn btn-danger" type="submit">登录</button></a>
+                {%endif%}
+            </div>
+        </nav>
+    </div>
+
+</header>

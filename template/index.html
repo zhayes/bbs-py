@@ -1,0 +1,32 @@
+
+{% extends "base.html" %}
+
+{% block left-content %}
+    {% include 'left-side.html' %}
+{% endblock %}
+
+{% block main-content %}
+    {% if user_name and user_id %}
+        {% include 'expression.html' %}
+    {% endif %}
+
+    {% for article in article_list %}
+    <a href="/article/{{article.id}}" class="list-group-item list-group-item-action mb-2">
+        <div style="word-break: break-all;">
+            <h6 class="mb-1">{{article.title}}</h6>
+            <div class='d-flex justify-content-between'>
+                <small>{{article.create_time|date:'Y-m-d H:i:s'}}</small>
+                <small>10 <i class="fa fa-heart-o"></i></small>
+            </div>
+        </div>
+        <p class="mb-1" style="font-size: 14px; text-indent: 28px; word-break: break-all; justify-content: space-between;">
+            {{article.content|striptags|slice:'500'}}...
+        </p>
+        <small>via: {{article.author_name}}</small>
+    </a>
+    {% endfor %}
+{% endblock %}
+
+{% block right-content %}
+    {% include 'right-side.html' %}
+{% endblock %}

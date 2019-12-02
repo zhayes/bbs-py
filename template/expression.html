@@ -1,0 +1,204 @@
+<div id="post_expression" style="padding: .9em; background-color: rgba(234,234,234,.4); display: flex; margin-bottom: .8em; flex-direction: column;">
+    <textarea id="expression_zoom" rows="5" placeholder="请输入内容... 最多能输入200个字符" style="flex: auto; padding: .8em; outline: none; border: 1px dashed #dc3545; background-color: #fff"></textarea>
+    <div class="d-flex justify-content-between mt-2">
+        <div style="font-size: 22px">
+            <!-- <label for="pic">
+                <i name="pic" style="cursor: pointer" class="fa fa-picture-o" aria-hidden="true"></i>
+            </label> -->
+            <form id="upload_pic_form">
+                <input id="file" name="file" type="file" style="display: none" accept="image/*" />
+            </form>
+
+            <i id="toggle_upload_img" style="cursor: pointer; outline: none" class="pic fa fa-picture-o" aria-hidden="true" tabindex="0"
+                data-toggle="popover">
+            </i>
+        </div>
+        <div>
+            <small><span id="word_counts">0</span>/200</small> <button id="publish_expression_btn" class="btn btn-danger btn-sm"><i class="fa fa-rocket" aria-hidden="true"></i> 发布</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/template" id="upload_img_template">
+    <div id="uploadImg_box" style="display:flex; min-width: 270px; max-width: 270px; flex-wrap:wrap; margin-right: -10px" id="uploadImg_box">
+        <div class="upload_img_plus" id="box">
+            <label for="file" style="display:block; width: 100%; height: 100%; cursor: pointer">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+            </label>
+        </div>
+    </div>
+</script>
+<script>
+    (function () {
+        var post_expression = document.getElementById('post_expression');
+        var upload_pic_form = document.getElementById('upload_pic_form');
+        var fileDom = upload_pic_form.querySelector("input");
+        var wordsDom = document.querySelector('#word_counts');
+        var publish_expression_btn = document.querySelector('#publish_expression_btn');
+
+        var expression_zoom = document.querySelector('#expression_zoom');
+
+        var max_upload_num = 9;//图片最多能上传的数量；
+        var max_word_counts = 200;//允许输入的最大字数；
+
+        var upload_img_template = document.querySelector('#upload_img_template').innerText;
+
+        var data = {}
+
+
+        window.onload = function () {
+
+            $('.pic').popover({
+                trigger: 'focus',
+                template: '<div class="popover" role="tooltip" style="max-width: 500px;"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
+                content: upload_img_template,
+                html: true,
+                trigger: 'click',
+                title: "上传图片(最多支持"+max_upload_num+"张)",
+                placement: 'bottom',
+                delay: { "show": 100, "hide": 100 }
+            })
+
+            fileDom.addEventListener('change', uploadImg);
+
+
+            $(document).on('click', '.trash', function(e){
+                $(this).parent().remove();
+
+                var uploadImg_box = document.getElementById('uploadImg_box');
+                var addBtn = uploadImg_box.querySelector('#box');
+
+                if (uploadImg_box.children.length < (max_upload_num+1)) {
+                    addBtn.style.display = "block";
+                }
+            })
+
+            $(expression_zoom).on('input propertychange', inputCounts)
+
+            publish_expression_btn.addEventListener('click', publishExpression)
+        }
+        
+
+        function inputCounts(e){
+            var val = e.target.value;
+            var len = val.length;
+            
+            if(len>max_word_counts){
+                e.target.value = val.substring(0,max_word_counts);
+                return;
+            }
+
+            if(len){
+                wordsDom.style.fontFamily = "Wawati SC";
+                wordsDom.style.fontSize = '18px';
+                wordsDom.innerText = '已输入'+len;
+            }else{
+                wordsDom.innerText = len;
+                wordsDom.style.fontFamily = "";
+                wordsDom.style.fontSize = "";
+            }
+            
+        }
+
+        function uploadImg(e) {
+
+            var file = e.target.files[0];
+            var formdata = new FormData()
+            formdata.append('file', file)
+
+            upload_pic_form.reset();
+            {% load static %}
+            var url = "{%static 'img/spinning.gif'%}"//URL.createObjectURL(file);
+
+            var img = document.createElement('img');
+            img.src = url;
+
+            var span = document.createElement("span");
+            span.className = "trash"
+            span.innerHTML = '<i class="fa fa-trash" aria-hidden="true"></i>';//删除按钮
+
+            var div = document.createElement('div');
+            div.className = "upload_img_plus choosed_img";
+
+            div.appendChild(img);
+            div.appendChild(span);
+
+            sendImg(formdata, function(result){
+                var url = result.data.url;
+                img.src= url;
+                img.dataset.waitUpload = true;
+                img.dataset.url = url;
+
+            }, function(){
+                img.parentElement.outerHTML=""
+            });
+
+            var uploadImg_box = document.getElementById('uploadImg_box');
+            var addBtn = uploadImg_box.querySelector('#box');
+
+            uploadImg_box.insertBefore(div, addBtn);
+
+            if (uploadImg_box.children.length == (max_upload_num+1)) {
+                addBtn.style.display = "none";
+            }
+        }
+
+        function sendImg(formData, callback, errorFunc) {
+           setTimeout(function(){
+                $.ajax({
+                    url: '/upload/img',
+                    method: 'POST',
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: function (data) {
+                        callback && callback(data)
+                    },
+                    error: function(){
+                        errorFunc && errorFunc()
+                    }
+                })
+           },20)
+        }
+
+
+        function publishExpression(e){
+            var formData = new FormData();
+
+            var urls = [];
+            $('.choosed_img img').each(function(){
+                var url = this.dataset.url;
+                if(url){
+                    urls.push(url);
+                }
+            })
+
+            formData.append('content', expression_zoom.value.trim());
+            formData.append('urls', urls.join(','));
+            formData.append('author_id', {{user_id}});
+
+            e.target.disabled = true;
+
+            $.ajax({
+                url: '/expression/create',
+                method: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function(){
+                    e.target.disabled = false;
+                    expression_zoom.value = "";
+
+                    $('#toggle_upload_img').popover('hide');
+
+                    wordsDom.innerText = 0;
+                    wordsDom.style.fontFamily = "";
+                    wordsDom.style.fontSize = "";
+                },
+                error: function(){
+                    e.target.disabled = false;
+                }
+            })
+        }
+    })()
+</script>

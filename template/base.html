@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{% static 'css/common.css' %}" rel="stylesheet">
+    {% block css %}
+
+    {% endblock %}
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- 头部导航开始 -->
+        {% include 'header.html' %}
+        <!-- 头部导航结束 -->
+        <div class="container content-section">
+            <!-- 左边栏开始 -->
+            {% block left-content %}
+
+            {% endblock %}
+            
+            <!-- 左边栏结束 -->
+
+            <div class="content-swrap">
+                <!-- 主内容展示区开始 -->
+                {% block main-content %}
+
+                {% endblock %}
+                <!-- 主内容展示区结束 -->
+
+            </div>
+
+            <!-- 右边栏开始 -->
+            {% block right-content %}
+
+            {% endblock %}
+            
+            <!-- 右边栏结束 -->
+        </div>
+    </div>
+    {%csrf_token%}
+    <script src="{% static 'js/common.js' %}"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.2.1/js/bootstrap.min.js"></script>
+    {% block js %}
+
+    {% endblock %}
+</body>
+
+</html>
